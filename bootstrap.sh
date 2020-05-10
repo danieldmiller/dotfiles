@@ -5,6 +5,11 @@ cd "$(dirname "${BASH_SOURCE}")";
 git pull origin master;
 
 function doIt() {
+        mkdir -p $HOME/.vim
+        mkdir -p $HOME/.vim/backups
+        mkdir -p $HOME/.vim/swaps
+        mkdir -p $HOME/.vim/undo
+
 	rsync --exclude ".git/" \
 		--exclude ".DS_Store" \
 		--exclude ".osx" \
