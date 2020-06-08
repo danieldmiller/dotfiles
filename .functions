@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+# Create a new directory and enter it
+function mkd() {
+	mkdir -p "$@" && cd "$_";
+}
+
+# Use Git’s colored diff when available
+hash git &>/dev/null;
+if [ $? -eq 0 ]; then
+	function diff() {
+		git diff --no-index --color-words "$@";
+	}
+fi;
+
+# Quit all open applications
+function quitall() {
+        shouldPreserveTerminal=$1
+
+        osascript <<EOF
+        # get list of open apps
+        tell application "System Events"
+          set allApps to displayed name of (every process whose background only is false) as list
+        end tell
+
+        # leave some apps open 
+        set exclusions to {"Finder", "LaunchBar", "iTerm2"}
+
+        # quit each app
+        repeat with thisApp in allApps
+          set thisApp to thisApp as text
+          if thisApp is not in exclusions then
+            tell application thisApp to quit
+          end if
+        end repeat
+    
+        tell application "Finder" to close every window
+EOF
+        
+        if [ "$shouldPreserveTerminal" != true ] ; then
+            # quit iTerm2 after closing other apps
+            osascript -e 'tell application "iTerm2" to quit'
+        fi
+}
